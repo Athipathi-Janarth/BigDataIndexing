@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using BigDataIndexing.WebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -9,8 +10,10 @@ using StackExchange.Redis;
 
 namespace BigDataIndexing.WebApi.Controllers;
 
+
 [ApiController]
 [Route("v1/[Controller]")]
+[Authorize]
 public class PlanController : ControllerBase
 {
     private readonly IDatabase _redisDatabase;
@@ -119,5 +122,34 @@ public class PlanController : ControllerBase
 
         _redisDatabase.KeyDelete(id);
         return NoContent();
+    }
+    [HttpPatch("{id}")]
+    public IActionResult PatchPlan(string id, [FromBody] JsonObject patch, [FromHeader(Name = "If-Match")] string ifMatch = null)
+    {
+        if (patch == null)
+        {
+            return BadRequest();
+        }
+        if (!_jsonSchemaValidator.ValidateJson(patch.ToString(), out IList<string> errors))
+        {
+            return BadRequest(new { Errors = errors });
+        }
+
+        var planJson = _redisDatabase.StringGet(id).ToString();
+        if (string.IsNullOrEmpty(planJson))
+        {
+            return NotFound();
+        }
+
+        var etag = planJson.GetHashCode().ToString();
+
+        if (!string.IsNullOrEmpty(ifMatch) && !ifMatch.Equals(etag))
+        {
+            return StatusCode(StatusCodes.Status412PreconditionFailed, new { Message = "ETag mismatch" });
+        }
+        
+        _redisDatabase.StringSet(id, patch.ToString());
+        Response.Headers["ETag"] = patch.ToString().GetHashCode().ToString();
+        return Ok(patch);
     }
 }

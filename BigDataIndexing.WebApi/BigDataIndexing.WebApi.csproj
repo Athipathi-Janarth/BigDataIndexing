@@ -8,10 +8,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Google.Apis.Auth.AspNetCore3" Version="1.68.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.20" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.31" />
       <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="6.0.0-preview.4.21253.5" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0-preview.4.24266.19" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0-preview.4.24266.19" />
+      <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.35.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1-beta1" />
       <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
